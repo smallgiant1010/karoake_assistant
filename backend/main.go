@@ -13,20 +13,38 @@ import (
 // const ollamaCloudStr string = "https://ollama.zl100.xyz/api"
 const ollamaLocalStr string = "http://localhost:11434/api"
 const ollamaModel string = "gpt-oss:120b-cloud"
+const systemPrompt string = `
+	You are a multilingual lyric transliterator. 
+	Your job involves turning lyrics from another language besides english to a romanticized version using english characters.
+	You rewrite lyrics phonetically using English characters while maintaining the original rhythm and tone.
+	
+	**Instructions
+	- Do NOT translate the lyrics to English, only rewrite their pronounciation.
+	- Maintain the same structure and number of lines.
+	- Do not respond with extra explanations or commentary.
+	- Output only the rewritten lyrics
+
+	Failure to adhere to these instructions will result in termination.
+`
 
 type Song struct {
 	Lyrics string `json:"lyrics"`
 }
 
-type OllamaResponse struct {
-	Model  string  `json:"model"`
-	Result Message `json:"message"`
-	Done   bool    `json:"done"`
-}
-
 type Message struct {
 	Role    string `json:"role"`
-	Content string `json:"content"`
+	Content string `json:"Content"`
+}
+
+type OllamaRequest struct {
+	Model    string    `json:"model"`
+	Messages []Message `json:"messages"`
+	Stream   bool      `json:"stream"`
+}
+
+type OllamaResponse struct {
+	Model    string  `json:"model"`
+	Response Message `json:"message"`
 }
 
 // function to call when endpoint hit
@@ -35,6 +53,7 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 
+	w.Header().Set("Access-Control-Allow-Origin", "POST, GET")
 	fmt.Printf("%s / HTTP/1.1\n", r.Method)
 	io.WriteString(w, "Root Endpoint Recieved!\n") // what to send to res
 }
@@ -58,8 +77,10 @@ func postSong(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("%s /lyrics HTTP/1.1", r.Method)
+	fmt.Printf("%s /lyrics HTTP/1.1\n", r.Method)
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "POST, GET")
+	w.Header().Set("Cache-Control", "no-store")
 	w.WriteHeader(http.StatusOK)
 
 	outputSong := new(Song)
@@ -72,13 +93,17 @@ func postSong(w http.ResponseWriter, r *http.Request) {
 }
 
 func callAI(lyrics *string) (string, error) {
-	data := map[string]any{
-		"model": ollamaModel,
-		"messages": []Message{
-			{
-				Role:    "translator",
-				Content: "Given these lyrics, can you provide a romanticized version of them using english characters: " + *lyrics,
-			},
+	data := new(OllamaRequest)
+	data.Model = ollamaModel
+	data.Stream = false
+	data.Messages = []Message{
+		{
+			Role:    "system",
+			Content: systemPrompt,
+		},
+		{
+			Role:    "user",
+			Content: *lyrics,
 		},
 	}
 
@@ -102,7 +127,7 @@ func callAI(lyrics *string) (string, error) {
 		return "", err
 	}
 
-	return content.Result.Content, err
+	return content.Response.Content, err
 }
 
 func main() {
