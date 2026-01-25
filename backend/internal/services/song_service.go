@@ -16,8 +16,8 @@ func NewSongService(repo_ repository.AISongRepository) *SongService {
 	}
 }
 
-func (s *SongService) RomanticizeSong(ctx context.Context, song *domains.Song) (string, error) {
-	return s.repo.CallToAI(ctx, song)
+func (s *SongService) RomanticizeSong(ctx context.Context, song *domains.Song) (*domains.Song, error) {
+	return s.repo.CallToAI(ctx, song.Lyrics)
 }
 
 
