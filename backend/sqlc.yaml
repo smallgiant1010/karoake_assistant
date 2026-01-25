@@ -1,17 +1,17 @@
-version: "1"
+version: "2"
 sql:
-	- engine: "postgres"
-	  schema: "migrations/0001_init.sql"
-	  queries: "internal/repository/queries"
-	  gen:
-	    go:
-	      package: "sqlc"
-	      out: "internal/repository/sqlc"
-	      sql_package: "pgx/v5"
-	      emit_json_tags: true
-	      emit_db_tags: true
-	      json_tags_case_style: "pascal"
-	      json_tags_id_uppercase: true
+  - engine: "postgresql"
+    schema: "migrations/0001_init.sql"
+    queries: "internal/repository/queries"
+    gen:
+      go:
+        package: "sqlc"
+        out: "internal/repository/sqlc"
+        sql_package: "pgx/v5"
+        emit_json_tags: true
+        emit_db_tags: true
+        json_tags_case_style: "pascal"
+        json_tags_id_uppercase: true
 
 
 

@@ -36,7 +36,7 @@ CREATE INDEX idx_user_userid ON users (UserID);
 	
 CREATE TABLE IF NOT EXISTS usersToSongs (
 	SongID BIGINT REFERENCES songs (SongID),
-	UserID INT REFERNCES users (UserID)
+	UserID INT REFERENCES users (UserID),
 	PRIMARY KEY (UserID, SongID)
 );
 
