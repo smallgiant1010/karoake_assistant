@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"	
 	"os"
-	"karaoke_assistant/backend/internal/app"
-	"karaoke_assistant/backend/internal/config"
+	"karoake_assistant/backend/internal/app"
+	"karoake_assistant/backend/internal/platform/config"
 )
 
 func main() {

@@ -1,6 +1,8 @@
 package transport
 
 type CreateSongRequest struct {
-	Lyrics string `json:"lyrics"`
+	Title       string `json:"title"`
+	Language    string `json:"langauge"`
+	Lyrics      string `json:"lyrics"`
+	IsGenerated bool   `json:"bool"`
 }
-

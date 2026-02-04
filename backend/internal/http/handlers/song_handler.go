@@ -1,12 +1,10 @@
 package handlers
 
 import (
-	"fmt"
-	"net/http"
 	"encoding/json"
-	"karaoke_assistant/backend/internal/http/transport"
-	"karaoke_assistant/backend/internal/domains"
-	"karaoke_assistant/backend/internal/services"
+	"fmt"
+	"karoake_assistant/backend/internal/http/transport"
+	"net/http"
 )
 
 func (h *Handler) Romanticize(w http.ResponseWriter, r *http.Request) {
@@ -32,13 +30,12 @@ func (h *Handler) Romanticize(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "POST")
 	w.Header().Set("Cache-Control", "no-store")
 	w.WriteHeader(http.StatusOK)
-	
+
 	response := transport.CreateSongResponse{
-		Title: song.Title,
-		Language: song.Language,
+		SongID:          song.SongID,
+		Title:           song.Title,
+		Langauge:        song.Language,
 		Romanticization: song.Lyrics,
 	}
 	json.NewEncoder(w).Encode(response)
 }
-
-

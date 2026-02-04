@@ -11,9 +11,10 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createSong = `-- name: CreateSong :exec
+const createSong = `-- name: CreateSong :one
 INSERT INTO songs (Language, Title, IsGenerated, Lyrics)
 VALUES ($1, $2, $3, $4)
+RETURNING songid, language, title, isgenerated, lyrics
 `
 
 type CreateSongParams struct {
@@ -23,14 +24,22 @@ type CreateSongParams struct {
 	Lyrics      pgtype.Text `db:"lyrics" json:"Lyrics"`
 }
 
-func (q *Queries) CreateSong(ctx context.Context, arg CreateSongParams) error {
-	_, err := q.db.Exec(ctx, createSong,
+func (q *Queries) CreateSong(ctx context.Context, arg CreateSongParams) (Song, error) {
+	row := q.db.QueryRow(ctx, createSong,
 		arg.Language,
 		arg.Title,
 		arg.Isgenerated,
 		arg.Lyrics,
 	)
-	return err
+	var i Song
+	err := row.Scan(
+		&i.Songid,
+		&i.Language,
+		&i.Title,
+		&i.Isgenerated,
+		&i.Lyrics,
+	)
+	return i, err
 }
 
 const getSongByID = `-- name: GetSongByID :one
@@ -56,7 +65,7 @@ SELECT s.Title, s.Language, s.Lyrics, s.IsGenerated, a.Name
 FROM artists a 
 LEFT JOIN artistsToSongs j ON a.ArtistID = j.ArtistID
 RIGHT JOIN songs s ON j.SongID = s.SongID
-WHERE a.Name LIKE $1
+WHERE a.Name LIKE '%' || $1 || '%'
 ORDER BY a.ArtistID
 `
 
@@ -68,8 +77,8 @@ type GetSongsByArtistRow struct {
 	Name        string      `db:"name" json:"Name"`
 }
 
-func (q *Queries) GetSongsByArtist(ctx context.Context, name string) ([]GetSongsByArtistRow, error) {
-	rows, err := q.db.Query(ctx, getSongsByArtist, name)
+func (q *Queries) GetSongsByArtist(ctx context.Context, dollar_1 pgtype.Text) ([]GetSongsByArtistRow, error) {
+	rows, err := q.db.Query(ctx, getSongsByArtist, dollar_1)
 	if err != nil {
 		return nil, err
 	}
@@ -95,15 +104,16 @@ func (q *Queries) GetSongsByArtist(ctx context.Context, name string) ([]GetSongs
 }
 
 const getSongsByTitle = `-- name: GetSongsByTitle :many
-SELECT s.Title, s.Language, s.Lyrics, s.IsGenerated, a.Name
+SELECT s.songID, s.Title, s.Language, s.Lyrics, s.IsGenerated, a.Name
 FROM artists a 
 LEFT JOIN artistsToSongs j ON a.ArtistID = j.ArtistID
 RIGHT JOIN songs s ON j.SongID = s.SongID
-WHERE s.Title LIKE $1
+WHERE s.Title LIKE '%' || $1 || '%'
 ORDER BY s.SongID
 `
 
 type GetSongsByTitleRow struct {
+	Songid      int64       `db:"songid" json:"Songid"`
 	Title       string      `db:"title" json:"Title"`
 	Language    string      `db:"language" json:"Language"`
 	Lyrics      pgtype.Text `db:"lyrics" json:"Lyrics"`
@@ -111,8 +121,8 @@ type GetSongsByTitleRow struct {
 	Name        string      `db:"name" json:"Name"`
 }
 
-func (q *Queries) GetSongsByTitle(ctx context.Context, title string) ([]GetSongsByTitleRow, error) {
-	rows, err := q.db.Query(ctx, getSongsByTitle, title)
+func (q *Queries) GetSongsByTitle(ctx context.Context, dollar_1 pgtype.Text) ([]GetSongsByTitleRow, error) {
+	rows, err := q.db.Query(ctx, getSongsByTitle, dollar_1)
 	if err != nil {
 		return nil, err
 	}
@@ -121,6 +131,7 @@ func (q *Queries) GetSongsByTitle(ctx context.Context, title string) ([]GetSongs
 	for rows.Next() {
 		var i GetSongsByTitleRow
 		if err := rows.Scan(
+			&i.Songid,
 			&i.Title,
 			&i.Language,
 			&i.Lyrics,

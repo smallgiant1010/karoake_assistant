@@ -1,6 +1,7 @@
--- name: CreateSong :exec
+-- name: CreateSong :one
 INSERT INTO songs (Language, Title, IsGenerated, Lyrics)
-VALUES ($1, $2, $3, $4);
+VALUES ($1, $2, $3, $4)
+RETURNING *;
 
 -- name: GetSongByID :one
 SELECT * FROM songs
@@ -11,15 +12,15 @@ SELECT s.Title, s.Language, s.Lyrics, s.IsGenerated, a.Name
 FROM artists a 
 LEFT JOIN artistsToSongs j ON a.ArtistID = j.ArtistID
 RIGHT JOIN songs s ON j.SongID = s.SongID
-WHERE a.Name LIKE $1
+WHERE a.Name LIKE '%' || $1 || '%'
 ORDER BY a.ArtistID;
 
 -- name: GetSongsByTitle :many
-SELECT s.Title, s.Language, s.Lyrics, s.IsGenerated, a.Name
+SELECT s.songID, s.Title, s.Language, s.Lyrics, s.IsGenerated, a.Name
 FROM artists a 
 LEFT JOIN artistsToSongs j ON a.ArtistID = j.ArtistID
 RIGHT JOIN songs s ON j.SongID = s.SongID
-WHERE s.Title LIKE $1
+WHERE s.Title LIKE '%' || $1 || '%'
 ORDER BY s.SongID;
 
 

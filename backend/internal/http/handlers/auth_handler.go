@@ -1,15 +1,13 @@
 package handlers
 
 import (
-	"fmt"
-	"net/http"
 	"encoding/json"
-	"karaoke_assistant/backend/internal/http/transport"
-	"karaoke_assistant/backend/internal/domains"
-	"karaoke_assistant/backend/internal/services"
+	"fmt"
+	"karoake_assistant/backend/internal/http/transport"
+	"net/http"
 )
 
-func (h* Handler) Signup(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -21,7 +19,7 @@ func (h* Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.authService.CreateUser(r.Context(), request)
+	user, err := h.authService.CreateUser(r.Context(), &request)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -36,25 +34,25 @@ func (h* Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	response := transport.CreateUserResponse{
 		Username: user.Username,
 		Password: user.Password,
-		UserID: user.UserID,
+		UserID:   user.UserID,
 	}
 
 	json.NewEncoder(w).Encode(response)
 }
 
-func (h* Handler) GetUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var request transport.FindUserRequest
+	var request transport.AuthenticateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		http.Error(w, "body could not be read", http.StatusBadRequest)
 		return
 	}
 
-	user, err := h.authService.AuthenticateUser(r.Context(), request)
+	user, err := h.authService.AuthenticateUser(r.Context(), &request)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -67,8 +65,8 @@ func (h* Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	response := transport.AuthenticateUserResponse{
-		UserID: user.UserID,
-		Username: user.Username,
+		UserID:        user.UserID,
+		Username:      user.Username,
 		GenerateCount: user.GenerateCount,
 	}
 
