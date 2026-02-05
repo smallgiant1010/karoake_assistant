@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	"database/sql"
+	"github.com/jackc/pgx/v5"
 	"errors"
 	"fmt"
 	"karoake_assistant/backend/internal/data/mapper"
@@ -31,9 +31,9 @@ func (a *AuthService) CreateUser(ctx context.Context, req *transport.CreateUserR
 	}
 
 	user, err := a.queries.GetUser(ctx, req.Username)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		return nil, fmt.Errorf("error occured with querying user: %v", err)
-	} else if !errors.Is(err, sql.ErrNoRows) {
+	} else if !errors.Is(err, pgx.ErrNoRows) {
 		return mapper.UserModelToDomain(&user), nil
 	} else {
 		newUser, err := a.queries.CreateUser(ctx, sqlc.CreateUserParams{
@@ -59,9 +59,9 @@ func (a *AuthService) AuthenticateUser(ctx context.Context, req *transport.Authe
 	}
 
 	user, err := a.queries.GetUser(ctx, req.Username)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		return nil, fmt.Errorf("error occured with querying user: %v", err)
-	} else if errors.Is(err, sql.ErrNoRows) {
+	} else if errors.Is(err, pgx.ErrNoRows) {
 		return nil, fmt.Errorf("user could not be found")
 	} else {
 		if user.Password != req.Password {

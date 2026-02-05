@@ -1,22 +1,16 @@
+# Build Stage
 FROM golang:1.25
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
 COPY go.mod go.sum ./
+
 RUN go mod download
 
 COPY . .
 
-RUN go build -o ./bin ./cmd/api-server/main.go
-
-FROM alpine:latest
-
-WORKDIR /app
-
-COPY --from=build /bin .
-
-COPY --from=build /app/etc /app/etc
+RUN go build -o /usr/local/bin/app ./cmd/api-server/main.go
 
 EXPOSE 8080
 
-CMD ["./bin"]
+CMD ["app"]

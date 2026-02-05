@@ -26,6 +26,7 @@ func NewApp(cfg *config.Config) *App {
 	}
 
 	// AI Client
+	// consider just passing the config straight to this client instead of drilling through handlers
 	aiClient := ai.NewAIClient(
 		client,
 		false,

@@ -1,18 +1,8 @@
 name: karoake_assistant
 
 services:
-  backend:
-    env_file:
-        - ./backend/.env
-    container_name: backend
-    ports:
-      - "8080:8080"
-    build:
-      context: ./backend
-    depends_on:
-      - postgres
   postgres:
-    image: postgres-15-alpine
+    image: postgres:15-alpine
     container_name: pg
     restart: unless-stopped
     environment:
@@ -29,7 +19,19 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  backend:
+    env_file:
+        - ./backend/.env
+    container_name: backend
+    ports:
+      - "8080:8080"
+    build:
+      context: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
 
+    
 volumes:
   postgres_data:
     driver: local

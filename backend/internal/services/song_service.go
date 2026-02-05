@@ -2,8 +2,6 @@ package services
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"fmt"
 	"karoake_assistant/backend/internal/ai"
 	"karoake_assistant/backend/internal/data/mapper"
@@ -11,7 +9,6 @@ import (
 	"karoake_assistant/backend/internal/domains"
 	"karoake_assistant/backend/internal/http/transport"
 	"karoake_assistant/backend/internal/platform/config"
-
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -64,7 +61,7 @@ func (s *SongService) RomanticizeSong(ctx context.Context, req *transport.Create
 	}
 
 	songs, err := s.queries.GetSongsByTitle(ctx, titleFormatted)
-	if errors.Is(err, sql.ErrNoRows) {
+	if len(songs) == 0 {
 		newSong, err := s.queries.CreateSong(ctx, sqlc.CreateSongParams{
 			Language:    req.Language,
 			Title:       req.Title,
