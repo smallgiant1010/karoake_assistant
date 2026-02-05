@@ -2,7 +2,7 @@ package transport
 
 type CreateSongRequest struct {
 	Title       string `json:"title"`
-	Language    string `json:"langauge"`
+	Language    string `json:"language"`
 	Lyrics      string `json:"lyrics"`
-	IsGenerated bool   `json:"bool"`
+	IsGenerated bool   `json:"isGenerated"`
 }

@@ -30,6 +30,7 @@ func NewSongService(queries_ *sqlc.Queries, cfg_ *config.Config, api_ ai.AIAPI) 
 }
 
 func (s *SongService) RomanticizeSong(ctx context.Context, req *transport.CreateSongRequest) (*domains.Song, error) {
+	fmt.Printf("%+v\n", *req)
 	if req.Title == "" {
 		return nil, fmt.Errorf("title must not be empty")
 	}

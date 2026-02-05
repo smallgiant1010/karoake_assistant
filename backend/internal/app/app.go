@@ -8,6 +8,7 @@ import (
 	"karoake_assistant/backend/internal/platform/db"
 	"context"
 	"net/http"
+	"fmt"
 )
 
 type App struct {
@@ -20,6 +21,7 @@ func NewApp(cfg *config.Config) *App {
 	client := &http.Client{}
 	conn, queries, err := db.NewDatabaseConnection(cfg.DatabaseURL)
 	if err != nil {
+		fmt.Printf("error occured with database: %v\n", err)
 		return nil
 	}
 

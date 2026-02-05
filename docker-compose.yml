@@ -1,0 +1,36 @@
+name: karoake_assistant
+
+services:
+  backend:
+    env_file:
+        - ./backend/.env
+    container_name: backend
+    ports:
+      - "8080:8080"
+    build:
+      context: ./backend
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres-15-alpine
+    container_name: pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: localDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/migrations:/docker-entrypoint-initdb.d 
+    healthcheck:
+      test: ["CMD-SHELL", "psql -U postgres -d localDB -c 'SELECT 1;'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+
