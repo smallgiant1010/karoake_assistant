@@ -5,6 +5,7 @@ import (
 	"net/http"	
 	"os"
 	"karoake_assistant/backend/internal/app"
+	"karoake_assistant/backend/internal/http/middleware"
 	"karoake_assistant/backend/internal/platform/config"
 )
 
@@ -14,9 +15,11 @@ func main() {
 	application := app.NewApp(cfg)
 	defer application.Close()
 
+	handler := middleware.CORSMiddleware(application.Mux)
+
 	server := &http.Server {
 		Addr: ":" + cfg.ServerPort,
-		Handler: application.Mux,
+		Handler: handler,
 	}
 
 	fmt.Printf("starting server on %v\n", server.Addr)

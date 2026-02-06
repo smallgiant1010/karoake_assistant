@@ -27,7 +27,6 @@ func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("%s / HTTP/1.1\n", http.MethodPost)
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "POST")
 	w.Header().Set("Cache-Control", "no-store")
 	w.WriteHeader(http.StatusOK)
 
@@ -60,7 +59,6 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("%s / HTTP/1.1\n", http.MethodPost)
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "POST")
 	w.Header().Set("Cache-Control", "no-store")
 	w.WriteHeader(http.StatusOK)
 

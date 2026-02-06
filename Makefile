@@ -1,4 +1,4 @@
-.PHONY: clean start stop help: ## Prints help for targets with comments
+.PHONY: clean start stop help ## Prints help for targets with comments
 
 help:
 	@echo "Cluster Options: "
