@@ -1,65 +1,59 @@
 package app
 
 import (
-	"net/http"	
-	"context"
 	"github.com/jackc/pgx/v5"
-	"karaoke_assistant/backend/internal/http/handlers"
-	"karaoke_assistant/backend/internal/services"
-	"karaoke_assistant/backend/internal/repository"
-	"karaoke_assistant/backend/internal/config"
+	"karoake_assistant/backend/internal/ai"
+	"karoake_assistant/backend/internal/http/handlers"
+	"karoake_assistant/backend/internal/platform/config"
+	"karoake_assistant/backend/internal/platform/db"
+	"context"
+	"net/http"
+	"fmt"
 )
 
 type App struct {
-	Mux *http.ServeMux
+	Mux      *http.ServeMux
 	Database *pgx.Conn
 }
 
 func NewApp(cfg *config.Config) *App {
 	mux := http.NewServeMux()
 	client := &http.Client{}
-	conn, err := pgx.Connect(context.Background(), cfg.DatabaseURL)
+	conn, queries, err := db.NewDatabaseConnection(cfg.DatabaseURL)
+	if err != nil {
+		fmt.Printf("error occured with database: %v\n", err)
+		return nil
+	}
 
-	// Repository
-	aiRepo := repository.NewAIAPIRepository(
-			client,
-			cfg.AIAPIURL,
-			cfg.Model
-			false,
-			cfg.SystemPrompt,
-			conn,
+	// AI Client
+	// consider just passing the config straight to this client instead of drilling through handlers
+	aiClient := ai.NewAIClient(
+		client,
+		false,
 	)
-	authRepo := repository.NewAuthRepository(
-		conn,
-	)
-
-	// Services
-	songService := services.NewSongService(aiRepo)
-	authService := services.NewAuthService(authRepo)
 
 	// Handlers
-	songHandler := handlers.NewSongHandler(songService)
-	authHandler := handlers.NewAuthHandler(authService)
+	handler := handlers.NewHandler(queries, cfg, aiClient)
 
 	// Routing
-	InitalizeSongRoutes(mux, songHandler)
-	InitializeAuthRoutes(mux, songHandler)
+	InitializeSongRoutes(mux, handler)
+	InitializeAuthRoutes(mux, handler)
 
 	return &App{
-		Mux: mux,
+		Mux:      mux,
 		Database: conn,
 	}
 }
 
 func (a *App) Close() {
-	a.Database.Close()
+	a.Database.Close(context.Background())
 }
 
-func InitializeSongRoutes(m *http.ServeMux, songHandler *SongHandler) {
-	m.HandleFunc("/songs/query", songHandler.PostSong)
+func InitializeSongRoutes(m *http.ServeMux, songHandler *handlers.Handler) {
+	m.HandleFunc("/songs/query", songHandler.Romanticize)
 }
 
-func InitializeAuthRoutes(m *http.ServeMux, authHandler *AuthHandler) {
-	m.HandleFunc("/auth/add", authHandler.PostUser)
+func InitializeAuthRoutes(m *http.ServeMux, authHandler *handlers.Handler) {
+	m.HandleFunc("/auth/add", authHandler.Signup)
 	m.HandleFunc("/auth/login", authHandler.GetUser)
 }

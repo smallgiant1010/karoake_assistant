@@ -1,15 +1,17 @@
 package domains
 
 type User struct {
+	UserID int32
 	Username string
 	Password string
-	UserID string
+	GenerateCount int32
 }
 
-func NewUser(username_ string, password_ string, userID_ string) *User {
+func NewUser(userID int32, username string, password string, generateCount int32) *User {
 	return &User{
-		Username: username_,
-		Password: password_,
-		UserID: userID_,
+		UserID: userID,
+		Username: username,
+		Password: password,
+		GenerateCount: generateCount,
 	}
 }

@@ -9,9 +9,10 @@ import (
 	"context"
 )
 
-const createUser = `-- name: CreateUser :exec
+const createUser = `-- name: CreateUser :one
 INSERT INTO users (Username, Password)
 VALUES ($1, $2)
+RETURNING userid, username, password, generatecount
 `
 
 type CreateUserParams struct {
@@ -19,14 +20,22 @@ type CreateUserParams struct {
 	Password string `db:"password" json:"Password"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
-	_, err := q.db.Exec(ctx, createUser, arg.Username, arg.Password)
-	return err
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, createUser, arg.Username, arg.Password)
+	var i User
+	err := row.Scan(
+		&i.Userid,
+		&i.Username,
+		&i.Password,
+		&i.Generatecount,
+	)
+	return i, err
 }
 
-const createUserToSong = `-- name: CreateUserToSong :exec
+const createUserToSong = `-- name: CreateUserToSong :one
 INSERT INTO usersToSongs (SongID, UserID)
 VALUES ($1, $2)
+RETURNING songid, userid
 `
 
 type CreateUserToSongParams struct {
@@ -34,9 +43,11 @@ type CreateUserToSongParams struct {
 	Userid int32 `db:"userid" json:"Userid"`
 }
 
-func (q *Queries) CreateUserToSong(ctx context.Context, arg CreateUserToSongParams) error {
-	_, err := q.db.Exec(ctx, createUserToSong, arg.Songid, arg.Userid)
-	return err
+func (q *Queries) CreateUserToSong(ctx context.Context, arg CreateUserToSongParams) (Userstosong, error) {
+	row := q.db.QueryRow(ctx, createUserToSong, arg.Songid, arg.Userid)
+	var i Userstosong
+	err := row.Scan(&i.Songid, &i.Userid)
+	return i, err
 }
 
 const getUser = `-- name: GetUser :one

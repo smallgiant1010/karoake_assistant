@@ -1,4 +1,4 @@
-package repository
+package ai
 
 type Message struct {
 	Role string `json:"role"`

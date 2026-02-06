@@ -62,5 +62,5 @@ func ParseEnvAsInt(envName string, defaultValue uint16) uint16 {
 		return defaultValue
 	}
 
-	return value
+	return uint16(value)
 }

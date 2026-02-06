@@ -1,4 +1,4 @@
-module karaoke_assistant/backend
+module karoake_assistant/backend
 
 go 1.24.0
 

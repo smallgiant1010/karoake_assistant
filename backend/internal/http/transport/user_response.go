@@ -3,10 +3,11 @@ package transport
 type CreateUserResponse struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	UserID uint32 `json:"userID"`
+	UserID   int32  `json:"userID"`
 }
 
 type AuthenticateUserResponse struct {
-	UserID uint32 `json:"userID"`
-	Success bool `json:"success"`
+	UserID        int32  `json:"userID"`
+	Username      string `json:"username"`
+	GenerateCount int32  `json:"generateCount"`
 }

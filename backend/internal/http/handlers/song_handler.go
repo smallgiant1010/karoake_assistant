@@ -1,25 +1,13 @@
 package handlers
 
 import (
-	"fmt"
-	"net/http"
 	"encoding/json"
-	"karaoke_assistant/backend/internal/http/transport"
-	"karaoke_assistant/backend/internal/domains"
-	"karaoke_assistant/backend/internal/services"
+	"fmt"
+	"karoake_assistant/backend/internal/http/transport"
+	"net/http"
 )
 
-type SongHandler struct {
-	service *services.SongService
-}
-
-func NewSongHandler(service_ *services.SongService) *SongHandler {
-	return &SongHandler{
-		service: service_,
-	}
-}
-
-func (h *SongHandler) PostSong(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Romanticize(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -30,27 +18,24 @@ func (h *SongHandler) PostSong(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "body could not be read", http.StatusBadRequest)
 		return
 	}
-	
-	song, err := domains.NewSong(request.Lyrics)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
 
-	romanticized, err := h.service.RomanticizeSong(r.Context(), song)
+	song, err := h.songService.RomanticizeSong(r.Context(), &request)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Printf("%s / HTTP/1.1\n", http.MethodPost);
+	fmt.Printf("%s / HTTP/1.1\n", http.MethodPost)
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "POST")
 	w.Header().Set("Cache-Control", "no-store")
 	w.WriteHeader(http.StatusOK)
-	
-	response := transport.CreateSongResponse{Romanticization: romanticized}
+
+	response := transport.CreateSongResponse{
+		SongID:          song.SongID,
+		Title:           song.Title,
+		Langauge:        song.Language,
+		Romanticization: song.Lyrics,
+	}
 	json.NewEncoder(w).Encode(response)
 }
-
-
