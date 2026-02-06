@@ -1,14 +1,14 @@
 package app
 
 import (
+	"context"
+	"fmt"
 	"github.com/jackc/pgx/v5"
 	"karoake_assistant/backend/internal/ai"
 	"karoake_assistant/backend/internal/http/handlers"
 	"karoake_assistant/backend/internal/platform/config"
 	"karoake_assistant/backend/internal/platform/db"
-	"context"
 	"net/http"
-	"fmt"
 )
 
 type App struct {
