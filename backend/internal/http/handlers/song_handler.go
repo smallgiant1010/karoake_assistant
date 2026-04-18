@@ -9,19 +9,19 @@ import (
 
 func (h *Handler) Romanticize(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, `{"error": "method not allowed"}`, http.StatusMethodNotAllowed)
 		return
 	}
 
 	var request transport.CreateSongRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		http.Error(w, "body could not be read", http.StatusBadRequest)
+		http.Error(w, `{"error": "body could not be read"}`, http.StatusBadRequest)
 		return
 	}
 
 	song, err := h.songService.RomanticizeSong(r.Context(), &request)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()), http.StatusInternalServerError)
 		return
 	}
 

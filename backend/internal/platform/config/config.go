@@ -13,6 +13,7 @@ type Config struct {
 	APIKey string
 	ServerPort string
 	DatabaseURL string
+	JWT_SECRET string
 }
 
 func NewConfig() *Config {
@@ -38,6 +39,7 @@ func NewConfig() *Config {
 	apiKey := os.Getenv("OLLAMA_API_KEY")
 	serverPort := os.Getenv("PORT")
 	databaseURL := os.Getenv("PGSQL_CONNECTION")
+	jwtSecret := os.Getenv("JWT_SECRET")
 	
 	return &Config{
 		SystemPrompt: systemPrompt,
@@ -46,6 +48,7 @@ func NewConfig() *Config {
 		APIKey: apiKey,
 		ServerPort: serverPort,
 		DatabaseURL: databaseURL,
+		JWT_SECRET: jwtSecret,
 	}
 }
 

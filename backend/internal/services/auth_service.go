@@ -2,9 +2,9 @@ package services
 
 import (
 	"context"
-	"github.com/jackc/pgx/v5"
 	"errors"
 	"fmt"
+	"github.com/jackc/pgx/v5"
 	"karoake_assistant/backend/internal/data/mapper"
 	"karoake_assistant/backend/internal/data/sqlc"
 	"karoake_assistant/backend/internal/domains"

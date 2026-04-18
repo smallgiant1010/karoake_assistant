@@ -9,6 +9,14 @@ type Profile = {
 	generateCount: number;
 };
 
-type Credentials = Account & {
+type SignupResponse = Account & {
 	userID: number;
-}
+	token: string;
+};
+
+type LoginResponse = {
+	userID: number;
+	username: string;
+	generateCount: number;
+	token: string;
+};
