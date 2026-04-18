@@ -41,6 +41,19 @@ services:
     depends_on:
       backend:
         condition: service_started
+  tests:
+    container_name: tests
+    build:
+      context: ./testing
+    depends_on:
+      backend:
+        condition: service_started
+    environment:
+      - API_BASE_URL=http://backend:8080
+    volumes:
+      - ./testing:/app
+    profiles:
+      - testing
 
 volumes:
   postgres_data:

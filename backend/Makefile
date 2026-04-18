@@ -10,7 +10,7 @@ build:
 	@go build -o server ./cmd/api-server
 
 start:
-	@go run server
+	@go run ./server
 
 # Finds Process and Kills the Server with the Postgres Container
 stop:

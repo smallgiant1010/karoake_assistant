@@ -1,22 +1,25 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, type SubmitEventHandler } from "react";
 import { CreateNewAccount } from "../../services/AuthService";
+import { useAuthContext } from "../../hooks/useAuthContext";
 
 export default function Signup() {
 	const queryClient = useQueryClient();
+	const { setToken } = useAuthContext();
 	const [account, setAccount] = useState<Account>({
 		username: "",
 		password: "",
 	});
 
 	const { data, mutateAsync, status, error } = useMutation<
-		Credentials,
+		SignupResponse,
 		Error,
 		Account
 	>({
 		mutationFn: CreateNewAccount,
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["users"] });
+		onSuccess: (data) => {
+			setToken(data.token);
+			queryClient.invalidateQueries({ queryKey: ["profile"] });
 		},
 	});
 
@@ -76,7 +79,6 @@ export default function Signup() {
 			<div>
 				<h1>{data?.username}</h1>
 				<h2>{data?.userID}</h2>
-				<h2>{data?.password}</h2>
 			</div>
 		</section>
 	);

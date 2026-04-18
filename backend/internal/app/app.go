@@ -3,17 +3,21 @@ package app
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5"
 	"karoake_assistant/backend/internal/ai"
+	"karoake_assistant/backend/internal/auth"
 	"karoake_assistant/backend/internal/http/handlers"
+	"karoake_assistant/backend/internal/http/middleware"
 	"karoake_assistant/backend/internal/platform/config"
 	"karoake_assistant/backend/internal/platform/db"
 	"net/http"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type App struct {
-	Mux      *http.ServeMux
-	Database *pgx.Conn
+	Mux        *http.ServeMux
+	Database   *pgx.Conn
+	JWTService *auth.JWTService
 }
 
 func NewApp(cfg *config.Config) *App {
@@ -32,16 +36,20 @@ func NewApp(cfg *config.Config) *App {
 		false,
 	)
 
+	// JWT Service
+	jwtService := auth.NewJWTService(cfg.JWT_SECRET, 24)
+
 	// Handlers
-	handler := handlers.NewHandler(queries, cfg, aiClient)
+	handler := handlers.NewHandler(queries, cfg, aiClient, jwtService)
 
 	// Routing
 	InitializeSongRoutes(mux, handler)
-	InitializeAuthRoutes(mux, handler)
+	InitializeAuthRoutes(mux, handler, jwtService)
 
 	return &App{
-		Mux:      mux,
-		Database: conn,
+		Mux:        mux,
+		Database:   conn,
+		JWTService: jwtService,
 	}
 }
 
@@ -53,7 +61,9 @@ func InitializeSongRoutes(m *http.ServeMux, songHandler *handlers.Handler) {
 	m.HandleFunc("/songs/query", songHandler.Romanticize)
 }
 
-func InitializeAuthRoutes(m *http.ServeMux, authHandler *handlers.Handler) {
+func InitializeAuthRoutes(m *http.ServeMux, authHandler *handlers.Handler, jwtService *auth.JWTService) {
 	m.HandleFunc("/auth/add", authHandler.Signup)
-	m.HandleFunc("/auth/login", authHandler.GetUser)
+	m.HandleFunc("/auth/login", authHandler.Login)
+	protectedHandler := middleware.JWTContextMiddleware(jwtService, http.HandlerFunc(authHandler.Profile))
+	m.Handle("/auth/profile", protectedHandler)
 }
