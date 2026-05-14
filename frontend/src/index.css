@@ -1,68 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap');
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Share Tech Mono', monospace;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
+  color-scheme: dark;
+  color: #e0e0e0;
+  background-color: #0a0a0f;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(0, 255, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(255, 0, 255, 0.03) 0%, transparent 50%),
+    #0a0a0f;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
+
+a {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 500;
+  color: #00ffff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+a:hover {
+  color: #ff00ff;
+  text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: #00ffff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+h1 { font-size: 2.5em; }
+h2 { font-size: 1.8em; color: #ff00ff; text-shadow: 0 0 10px rgba(255, 0, 255, 0.5); }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  border: 2px solid #00ffff;
+  padding: 1em 2em;
   font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  background: transparent;
+  color: #00ffff;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:hover {
+  background: rgba(0, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), inset 0 0 20px rgba(0, 255, 255, 0.1);
+  color: #ff00ff;
+  border-color: #ff00ff;
+  text-shadow: 0 0 10px #ff00ff;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 2px solid #ff00ff;
+  outline-offset: 4px;
+}
+
+button[type="submit"] {
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 255, 0.1) 100%);
+  border: 3px solid;
+  border-image: linear-gradient(135deg, #00ffff, #ff00ff) 1;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  font-family: 'Share Tech Mono', monospace;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid #00ffff;
+  color: #00ffff;
+  padding: 0.8em 1em;
+  font-size: 1em;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus {
+  outline: none;
+  border-color: #ff00ff;
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.3), inset 0 0 10px rgba(255, 0, 255, 0.1);
+}
+
+input::placeholder {
+  color: rgba(0, 255, 255, 0.4);
+}
+
+fieldset {
+  border: 2px solid #00ffff;
+  border-radius: 0;
+  padding: 2em;
+  background: rgba(0, 255, 255, 0.02);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.1), inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+legend {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #39ff14;
+  padding: 0 1em;
+  text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+}
+
+label {
+  font-family: 'Share Tech Mono', monospace;
+  color: #e0e0e0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.9em;
+}
+
+hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ff00ff, #00ffff, transparent);
+  margin: 2em 0;
+}
+
+section {
+  background: rgba(10, 10, 15, 0.8);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  padding: 2em;
+  margin: 1em 0;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+p {
+  color: #e0e0e0;
+  line-height: 1.8;
+}
+
+strong {
+  color: #39ff14;
+  font-weight: 500;
+}
+
+::selection {
+  background: rgba(255, 0, 255, 0.3);
+  color: #ffffff;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00ffff, #ff00ff);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #39ff14;
 }

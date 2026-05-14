@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jackc/pgx/v5"
+	"golang.org/x/crypto/bcrypt"
 	"karoake_assistant/backend/internal/data/mapper"
 	"karoake_assistant/backend/internal/data/sqlc"
 	"karoake_assistant/backend/internal/domains"
@@ -36,9 +37,14 @@ func (a *AuthService) CreateUser(ctx context.Context, req *transport.CreateUserR
 	} else if !errors.Is(err, pgx.ErrNoRows) {
 		return mapper.UserModelToDomain(&user), nil
 	} else {
+		hashedString, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, fmt.Errorf("error occured with hashing password: %v", err)
+		}
+
 		newUser, err := a.queries.CreateUser(ctx, sqlc.CreateUserParams{
 			Username: req.Username,
-			Password: req.Password,
+			Password: string(hashedString),
 		})
 
 		if err != nil {
@@ -64,7 +70,8 @@ func (a *AuthService) AuthenticateUser(ctx context.Context, req *transport.Authe
 	} else if errors.Is(err, pgx.ErrNoRows) {
 		return nil, fmt.Errorf("user could not be found")
 	} else {
-		if user.Password != req.Password {
+		comparePassword := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+		if comparePassword != nil {
 			return nil, fmt.Errorf("passwords do not match")
 		}
 		return mapper.UserModelToDomain(&user), nil

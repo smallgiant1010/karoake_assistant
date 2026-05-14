@@ -100,7 +100,7 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("%s / HTTP/1.1\n", http.MethodPost)
+	fmt.Printf("%s / HTTP/1.1\n", http.MethodGet)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
